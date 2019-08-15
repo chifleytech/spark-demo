@@ -9,3 +9,4 @@ COPY shopping-cart-upload-data.sh /root/upload-data/shopping_cart.sh
 COPY create-tables-shopping.sql /root/create_tables.sql
 RUN mkdir /data-init
 COPY data/shopping/ /data-init/shopping/
+COPY er-spark.jar /root/existing-udfs/er-spark.jar
