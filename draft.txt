@@ -1,0 +1,194 @@
+docker stop $(docker ps -aq)
+docker rm $(docker ps -aq)
+docker image prune -a
+docker rmi $(docker images -q)
+
+jmap -dump:live,format=b,file=/root/logs/dump.hprof 6
+
+docker exec -i -t app_backend_1 /bin/bash
+-----
+
+
+docker exec -t <container name> gitlab-rake gitlab:backup:create
+
+-------------------
+
+
+BACKEND
+    a) JCE java
+
+    https://aws.amazon.com/blogs/devops/build-a-continuous-delivery-pipeline-for-your-container-images-with-amazon-ecr-as-source/
+
+    https://github.com/docker-library/openjdk/blob/282961c4ca0be09af7a556e38b8d5be0c2db0608/8/jre/Dockerfile
+
+    docker pull openjdk:8-stretch
+
+
+    docker stop sqlcd-server
+    docker rm sqlcd-server
+    docker build -t chifleytech/sqlcd-backend:latest .
+
+    docker run \
+    --name sqlcd-server \
+    -t -d -p 5284:5284 \
+    chifleytech/sqlcd-backend:latest
+
+    docker exec -i -t sql-containers_backend_1 /bin/sh
+    docker exec -i -t sql-containers_backend_1 /bin/sh
+
+
+
+FRONTEND
+    docker build -t chifleytech/sqlcd-frontend:latest .
+    docker run --detach \
+    -t -d -p 5000:5000 \
+    --name sqlcd-frontend \
+    chifleytech/sqlcd-frontend:latest
+    docker exec -i -t sql-containers_frontend_1 /bin/bash
+    docker exec -i -t production_nginx /bin/bash
+
+GITLAB
+    docker pull postgres
+    docker kill postgres
+    docker rm postgres
+    docker run --name postgres  -e POSTGRES_PASSWORD=mysecret -p 5432:5432 -d postgres
+    docker exec -i -t sql-containers_proxy_1 /bin/bash
+
+
+    docker pull gitlab/gitlab-ce
+    docker run --detach \
+        --hostname localhost \
+        --publish 443:443 --publish 80:80 --publish 23:22 \
+        --name gitlab \
+        --restart always \
+        --volume ~/gitlab/config:/etc/gitlab \
+        --volume ~/gitlab/logs:/var/log/gitlab \
+        --volume ~/gitlab/data:/var/opt/gitlab \
+        gitlab/gitlab-ce:latest
+
+
+POSTGRES
+
+    docker build -t chifleytech/postgres-draft:latest .
+    docker run -d -p 5434:5432 -e POSTGRES_PASSWORD=mysecret chifleytech/postgres-draft
+
+
+    https://medium.com/@lvthillo/connect-from-local-machine-to-postgresql-docker-container-f785f00461a7
+    docker stop my-postgres
+    docker rm my-postgres
+    docker run -d -p 5432:5432 --name my-postgres -e POSTGRES_PASSWORD=mysecret postgres
+    docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=mysecret chifleytech/postgres
+    docker build -t chifleytech/postgres:latest .
+
+ -----------
+
+openssl genrsa -out localhost.key 2048
+openssl req -new -sha256 \
+    -subj "/C=AU/ST=NSW/L=Sydney/O=localhost/OU=localhost/CN=localhost" \
+    -out localhost.csr \
+    -key localhost.key \
+    -config ssl.conf
+openssl req -text -noout -in localhost.csr
+openssl x509 -req \
+    -sha256 \
+    -days 3650 \
+    -in localhost.csr \
+    -signkey localhost.key \
+    -out localhost.crt \
+    -extensions req_ext \
+    -extfile ssl.conf
+
+ssl.conf
+[ req ]
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
+[ req_distinguished_name ]
+countryName                 = Country Name (2 letter code)
+countryName_default         = AU
+stateOrProvinceName         = State or Province Name (full name)
+stateOrProvinceName_default = England
+localityName                = Locality Name (eg, city)
+localityName_default        = Brighton
+organizationName            = Organization Name (eg, company)
+organizationName_default    = Hallmarkdesign
+commonName                  = Common Name (e.g. server FQDN or YOUR name)
+commonName_max              = 64
+commonName_default          = localhost
+[ req_ext ]
+subjectAltName = @alt_names
+[alt_names]
+DNS.1   = localhost
+DNS.2   = localhost
+
+
+v3.ext
+    authorityKeyIdentifier=keyid,issuer
+    basicConstraints=CA:FALSE
+    keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+    subjectAltName = @alt_names
+    [alt_names]
+    DNS.1 = %%DOMAIN%%
+
+
+
+ -----------
+ CREATE FUNCTION pymax (a integer, b integer)
+   RETURNS integer
+ AS $$
+   if (a is None) or (b is None):
+     return None
+   if a > b:
+     return a
+   return b
+ $$ LANGUAGE plpython3u;
+
+------------
+
+openssl genrsa -out localhost.key 2048
+openssl req -x509 -new -nodes -key localhost.key -sha256 -days 1024 -out localhost.pem -subj "/CN=localhost"
+
+
+--------------------
+
+docker exec -i -t sql-containers_proxy_1 /bin/bash
+docker cp sql-containers_proxy_1:/localhost.crt .
+
+---------------------
+docker build -t chifleytech/sqlcd-postgres-ncvr:latest .
+docker run -d -p 5435:5432 -e POSTGRES_PASSWORD=mysecret chifleytech/sqlcd-postgres-ncvr
+docker exec -i -t postgres-ncvr_db_tmp_1 /bin/bash
+
+docker exec -i -t sql-containers_git_1 /bin/bash
+docker exec -i -t sql-containers_backend_1 /bin/bash
+docker exec -i -t sql-containers_db_1 /bin/bash
+
+-----
+
+docker pull dpage/pgadmin4
+docker run -p 8070:80 \
+        -e "PGADMIN_DEFAULT_EMAIL=admin@chifleytech.com" \
+        -e "PGADMIN_DEFAULT_PASSWORD=password" \
+        -d dpage/pgadmin4
+
+-----------------
+docker exec -i -t spark_master_1 /bin/bash
+
+apt-get update
+apt-get install ssh
+
+ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 0600 ~/.ssh/authorized_keys
+
+vi etc/hadoop/hadoop-env.sh
+    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+    export HDFS_NAMENODE_USER=root
+    export HDFS_DATANODE_USER=root
+    export HDFS_SECONDARYNAMENODE_USER=root
+    export YARN_RESOURCEMANAGER_USER=root
+    export YARN_NODEMANAGER_USER=root
+cd /usr/hadoop-3.2.0/
+sbin/start-dfs.sh
+bin/hdfs namenode -format
+sbin/start-dfs.sh
