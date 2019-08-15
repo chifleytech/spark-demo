@@ -1,4 +1,4 @@
-FROM chifleytech/sqlcd-spark:latest
+FROM chifleytech/spark:latest
 
 #NCVR data (not enabled)
 COPY ncvr-upload-data.sh /root/ncvr/ncvr-upload-data.sh
