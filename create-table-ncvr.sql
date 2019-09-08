@@ -95,7 +95,7 @@ NCVR_2014
       load_dt string,
       age_group string )
        ROW FORMAT DELIMITED
-       FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 'hdfs://master:9000/data/ncvr/2014';
+       FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 'hdfs://localhost:9000/data/ncvr/2014';
 
 CREATE EXTERNAL TABLE
 NCVR_2017
@@ -191,4 +191,4 @@ NCVR_2017
       load_dt string,
       age_group string )
          ROW FORMAT DELIMITED
-         FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 'hdfs://master:9000/data/ncvr/2017';
+         FIELDS TERMINATED BY '\t' STORED AS TEXTFILE LOCATION 'hdfs://localhost:9000/data/ncvr/2017';

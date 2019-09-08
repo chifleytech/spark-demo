@@ -13,7 +13,7 @@ WITH SERDEPROPERTIES (
    "separatorChar" = ",",
    "quoteChar"     = "\""
 )
-STORED AS TEXTFILE LOCATION 'hdfs://master:9000/data/shopping-cart/amazon';
+STORED AS TEXTFILE LOCATION 'hdfs://localhost:9000/data/shopping-cart/amazon';
 
 
 CREATE EXTERNAL TABLE google(
@@ -27,7 +27,7 @@ WITH SERDEPROPERTIES (
    "separatorChar" = ",",
    "quoteChar"     = "\""
 )
-STORED AS TEXTFILE LOCATION 'hdfs://master:9000/data/shopping-cart/google';
+STORED AS TEXTFILE LOCATION 'hdfs://localhost:9000/data/shopping-cart/google';
 
 
 CREATE EXTERNAL TABLE expected(
@@ -39,4 +39,4 @@ WITH SERDEPROPERTIES (
    "separatorChar" = ",",
    "quoteChar"     = "\""
 )
-STORED AS TEXTFILE LOCATION 'hdfs://master:9000/data/shopping-cart/expected';
+STORED AS TEXTFILE LOCATION 'hdfs://localhost:9000/data/shopping-cart/expected';
